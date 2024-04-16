@@ -1,6 +1,5 @@
-import model.FaceReadingDataLanguage;
-import model.FaceReadingDatum;
-import model.Language;
+import model.*;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,8 +17,83 @@ public class Main {
     public static void main(String[] args) throws IOException {
         FileInputStream file = new FileInputStream("/Users/teahan/IdeaProjects/btk-excel-convert/src/main/resources/btk-file.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(file);
-        faceReadingImport(workbook);
+        luckyWallPaperImport(workbook);
 
+    }
+
+    private static void luckyWallPaperImport(XSSFWorkbook workbook) {
+        Sheet sheet = workbook.getSheetAt(4);
+        try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
+            try (Session session = sessionFactory.openSession()) {
+                Language languageEn = session.get(Language.class, 1);
+                Language languageTh = session.get(Language.class, 2);
+                Transaction transaction = session.beginTransaction();
+                for (var row : sheet) {
+                    if (row.getRowNum() <= 2) {
+                        continue;
+                    }
+
+                    if (row.getRowNum() == 27) {
+                        break;
+                    }
+
+                    String wallpaperName = row.getCell(1).getStringCellValue();
+                    String luckyMeaning = row.getCell(2).getStringCellValue();
+
+                    for (var cell : row) {
+                        var luckyWallpaperDatum = new LuckyWallpaperDatum();
+                        LuckyWallpaperDataLanguage enLuckyWallpaperDataLanguage = new LuckyWallpaperDataLanguage();
+                        LuckyWallpaperDataLanguage thLuckyWallpaperDataLanguage = new LuckyWallpaperDataLanguage();
+
+
+                        if (cell.getColumnIndex() == 3) {
+                            luckyWallpaperDatum.setTopicType("work");
+                            enLuckyWallpaperDataLanguage.setTopicResult("EN work " + cell.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult("TH work " + cell.getStringCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 4) {
+                            luckyWallpaperDatum.setTopicType("money");
+                            enLuckyWallpaperDataLanguage.setTopicResult("EN money " + cell.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult("TH money " + cell.getStringCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 5) {
+                            luckyWallpaperDatum.setTopicType("love");
+                            enLuckyWallpaperDataLanguage.setTopicResult("EN love " + cell.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult("TH love " + cell.getStringCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 6) {
+                            luckyWallpaperDatum.setTopicType("health");
+                            enLuckyWallpaperDataLanguage.setTopicResult("EN health " + cell.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult("TH health " + cell.getStringCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 3 || cell.getColumnIndex() == 4
+                                || cell.getColumnIndex() == 5 || cell.getColumnIndex() == 6) {
+                            enLuckyWallpaperDataLanguage.setLanguageCode(languageEn);
+                            enLuckyWallpaperDataLanguage.setName("EN " + wallpaperName);
+                            enLuckyWallpaperDataLanguage.setLuckyMeaning("EN " + luckyMeaning);
+
+                            thLuckyWallpaperDataLanguage.setLanguageCode(languageTh);
+                            thLuckyWallpaperDataLanguage.setName("TH " + wallpaperName);
+                            thLuckyWallpaperDataLanguage.setLuckyMeaning("TH " + luckyMeaning);
+
+                            session.persist(luckyWallpaperDatum);
+
+                            enLuckyWallpaperDataLanguage.setLuckyWallpaperData(luckyWallpaperDatum);
+                            thLuckyWallpaperDataLanguage.setLuckyWallpaperData(luckyWallpaperDatum);
+                            session.persist(thLuckyWallpaperDataLanguage);
+                            session.persist(enLuckyWallpaperDataLanguage);
+                            if (!transaction.isActive()) {
+                                transaction.commit();
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private static void faceReadingImport(XSSFWorkbook workbook) {
