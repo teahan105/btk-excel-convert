@@ -17,5 +17,8 @@
         <mapping class="model.Language"/>
         <mapping class="model.FaceReadingDatum"/>
         <mapping class="model.FaceReadingDataLanguage"/>
+        <mapping class="model.LuckyWallpaperDataLanguage"/>
+        <mapping class="model.LuckyNumberDabDataLanguage"/>
+        <mapping class="model.LuckyNumberDowDatum"/>
     </session-factory>
 </hibernate-configuration>

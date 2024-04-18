@@ -16,10 +16,6 @@ public class LuckyWallpaperDataLanguage {
     @JoinColumn(name = "language_code", nullable = false, referencedColumnName = "code")
     private Language languageCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lucky_wallpaper_data_id")
-    private LuckyWallpaperDatum luckyWallpaperData;
-
     @Column(name = "name", nullable = false, length = Integer.MAX_VALUE)
     private String name;
 
@@ -28,6 +24,28 @@ public class LuckyWallpaperDataLanguage {
 
     @Column(name = "topic_result", nullable = false, length = Integer.MAX_VALUE)
     private String topicResult;
+
+    @Column(name = "topic_type", length = 50)
+    private String topicType;
+
+    @Column(name = "image_storage_url", length = Integer.MAX_VALUE)
+    private String imageStorageUrl;
+
+    public String getImageStorageUrl() {
+        return imageStorageUrl;
+    }
+
+    public void setImageStorageUrl(String imageStorageUrl) {
+        this.imageStorageUrl = imageStorageUrl;
+    }
+
+    public String getTopicType() {
+        return topicType;
+    }
+
+    public void setTopicType(String topicType) {
+        this.topicType = topicType;
+    }
 
     public Integer getId() {
         return id;
@@ -43,14 +61,6 @@ public class LuckyWallpaperDataLanguage {
 
     public void setLanguageCode(Language languageCode) {
         this.languageCode = languageCode;
-    }
-
-    public LuckyWallpaperDatum getLuckyWallpaperData() {
-        return luckyWallpaperData;
-    }
-
-    public void setLuckyWallpaperData(LuckyWallpaperDatum luckyWallpaperData) {
-        this.luckyWallpaperData = luckyWallpaperData;
     }
 
     public String getName() {

@@ -16,12 +16,19 @@ public class LuckyNumberDabDataLanguage {
     @JoinColumn(name = "language_code", nullable = false, referencedColumnName = "code")
     private Language languageCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lucky_number_dab_data_id")
-    private LuckyNumberDabDatum luckyNumberDabData;
-
     @Column(name = "overall", length = Integer.MAX_VALUE)
     private String overall;
+
+    @Column(name = "sum_date_month")
+    private Short sumDateMonth;
+
+    public Short getSumDateMonth() {
+        return sumDateMonth;
+    }
+
+    public void setSumDateMonth(Short sumDateMonth) {
+        this.sumDateMonth = sumDateMonth;
+    }
 
     public Integer getId() {
         return id;
@@ -37,14 +44,6 @@ public class LuckyNumberDabDataLanguage {
 
     public void setLanguageCode(Language languageCode) {
         this.languageCode = languageCode;
-    }
-
-    public LuckyNumberDabDatum getLuckyNumberDabData() {
-        return luckyNumberDabData;
-    }
-
-    public void setLuckyNumberDabData(LuckyNumberDabDatum luckyNumberDabData) {
-        this.luckyNumberDabData = luckyNumberDabData;
     }
 
     public String getOverall() {
