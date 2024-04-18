@@ -1,14 +1,12 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "languages")
 public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('languages_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 

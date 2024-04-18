@@ -1,11 +1,8 @@
 package model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
 
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -13,34 +10,34 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
     @Id
-    @ColumnDefault("uuid_generate_v4()")
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "email", length = Integer.MAX_VALUE)
+    
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "user_name", length = Integer.MAX_VALUE)
+    
+    @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "social_id", length = Integer.MAX_VALUE)
+    
+    @Column(name = "social_id")
     private String socialId;
 
     @Column(name = "social_type", length = 50)
     private String socialType;
 
-    @Column(name = "avatar", length = Integer.MAX_VALUE)
+    @Column(name = "avatar")
+    @Type(type = "org.hibernate.type.TextType")
     private String avatar;
 
-    @ColumnDefault("false")
     @Column(name = "is_consent", nullable = false)
     private Boolean isConsent = false;
 
-    @ColumnDefault("now()")
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @ColumnDefault("now()")
     @Column(name = "updated_at")
     private Instant updatedAt;
 

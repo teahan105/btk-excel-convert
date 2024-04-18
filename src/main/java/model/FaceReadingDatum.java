@@ -1,18 +1,16 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "face_reading_data")
 public class FaceReadingDatum {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('face_reading_data_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "sign_code", length = Integer.MAX_VALUE)
+    @Column(name = "sign_code")
     private String signCode;
 
     @Column(name = "topic_type", length = 50)

@@ -1,14 +1,14 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "face_reading_data_languages")
 public class FaceReadingDataLanguage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('face_reading_data_languages_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -20,7 +20,8 @@ public class FaceReadingDataLanguage {
     @JoinColumn(name = "face_reading_data_id")
     private FaceReadingDatum faceReadingData;
 
-    @Column(name = "topic_result", length = Integer.MAX_VALUE)
+    @Column(name = "topic_result")
+    @Type(type = "org.hibernate.type.TextType")
     private String topicResult;
 
     public Integer getId() {

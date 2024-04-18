@@ -1,16 +1,12 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-
+import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "payments")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('payments_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -20,10 +16,12 @@ public class Payment {
     @Column(name = "amount")
     private Integer amount;
 
-    @Column(name = "order_no", length = Integer.MAX_VALUE)
+    
+    @Column(name = "order_no")
     private String orderNo;
 
-    @Column(name = "bank_code", length = Integer.MAX_VALUE)
+    
+    @Column(name = "bank_code")
     private String bankCode;
 
     @Column(name = "payment_date")
@@ -32,13 +30,15 @@ public class Payment {
     @Column(name = "payment_status")
     private Integer paymentStatus;
 
-    @Column(name = "bank_ref_code", length = Integer.MAX_VALUE)
+    
+    @Column(name = "bank_ref_code")
     private String bankRefCode;
 
     @Column(name = "current_datetime")
     private Instant currentDatetime;
 
-    @Column(name = "payment_description", length = Integer.MAX_VALUE)
+    
+    @Column(name = "payment_description")
     private String paymentDescription;
 
     public Integer getId() {

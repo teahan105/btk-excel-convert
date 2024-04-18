@@ -1,15 +1,15 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "lucky_number_dow_data")
 public class LuckyNumberDowDatum {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('lucky_number_dow_data_id_seq'")
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "day_of_week")
@@ -18,10 +18,12 @@ public class LuckyNumberDowDatum {
     @Column(name = "topic_type", length = 50)
     private String topicType;
 
-    @Column(name = "lucky_number", length = Integer.MAX_VALUE)
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "lucky_number")
     private String luckyNumber;
 
-    @Column(name = "lucky_external_link", length = Integer.MAX_VALUE)
+    @Column(name = "lucky_external_link")
+    @Type(type = "org.hibernate.type.TextType")
     private String luckyExternalLink;
 
     public Integer getId() {

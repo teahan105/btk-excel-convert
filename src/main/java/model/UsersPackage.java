@@ -1,15 +1,12 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-
+import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "users_packages")
 public class UsersPackage {
     @Id
-    @ColumnDefault("nextval('users_packages_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -29,13 +26,13 @@ public class UsersPackage {
     @JoinColumn(name = "package_service_result_id")
     private PackageServiceResult packageServiceResult;
 
-    @Column(name = "service_type", length = Integer.MAX_VALUE)
+    
+    @Column(name = "service_type")
     private String serviceType;
 
     @Column(name = "status", length = 20)
     private String status;
 
-    @ColumnDefault("now()")
     @Column(name = "purchased_at")
     private Instant purchasedAt;
 

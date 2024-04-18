@@ -1,31 +1,29 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
 
+import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "packages")
 public class Package {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('packages_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", length = Integer.MAX_VALUE)
+    
+    @Column(name = "name")
     private String name;
 
-    @ColumnDefault("false")
     @Column(name = "is_popular")
     private Boolean isPopular;
 
-    @ColumnDefault("true")
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(name = "description")
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
 
     @Column(name = "price")
@@ -34,11 +32,9 @@ public class Package {
     @Column(name = "currency_code", length = 20)
     private String currencyCode;
 
-    @ColumnDefault("now()")
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @ColumnDefault("now()")
     @Column(name = "created_at")
     private Instant createdAt;
 

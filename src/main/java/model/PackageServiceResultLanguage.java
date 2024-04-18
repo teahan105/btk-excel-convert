@@ -1,14 +1,14 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "package_service_result_languages")
 public class PackageServiceResultLanguage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('package_service_result_languages_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -20,16 +20,19 @@ public class PackageServiceResultLanguage {
     @JoinColumn(name = "package_service_result_id", nullable = false)
     private PackageServiceResult packageServiceResult;
 
-    @Column(name = "topic_result", length = Integer.MAX_VALUE)
+    @Column(name = "topic_result")
+    @Type(type = "org.hibernate.type.TextType")
     private String topicResult;
 
-    @Column(name = "overall", length = Integer.MAX_VALUE)
+    @Column(name = "overall")
+    @Type(type = "org.hibernate.type.TextType")
     private String overall;
 
     @Column(name = "topic_type", length = 50)
     private String topicType;
 
-    @Column(name = "character_name", length = Integer.MAX_VALUE)
+    
+    @Column(name = "character_name")
     private String characterName;
 
     public Integer getId() {

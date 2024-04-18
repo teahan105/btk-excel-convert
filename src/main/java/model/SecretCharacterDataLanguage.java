@@ -1,14 +1,14 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "secret_character_data_languages")
 public class SecretCharacterDataLanguage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('secret_character_data_languages_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -16,15 +16,18 @@ public class SecretCharacterDataLanguage {
     @JoinColumn(name = "language_code", nullable = false, referencedColumnName = "code")
     private Language languageCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "secret_character_data_id")
-    private SecretCharacterDatum secretCharacterData;
-
-    @Column(name = "character_name", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "character_name", nullable = false)
     private String characterName;
 
-    @Column(name = "personality", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "personality", nullable = false)
     private String personality;
+
+    @Column(name = "image_storage_url")
+    @Type(type = "org.hibernate.type.TextType")
+    private String imageStorageUrl;
+
+    @Column(name = "total_number")
+    private Integer totalNumber;
 
     public Integer getId() {
         return id;
@@ -42,14 +45,6 @@ public class SecretCharacterDataLanguage {
         this.languageCode = languageCode;
     }
 
-    public SecretCharacterDatum getSecretCharacterData() {
-        return secretCharacterData;
-    }
-
-    public void setSecretCharacterData(SecretCharacterDatum secretCharacterData) {
-        this.secretCharacterData = secretCharacterData;
-    }
-
     public String getCharacterName() {
         return characterName;
     }
@@ -64,6 +59,22 @@ public class SecretCharacterDataLanguage {
 
     public void setPersonality(String personality) {
         this.personality = personality;
+    }
+
+    public String getImageStorageUrl() {
+        return imageStorageUrl;
+    }
+
+    public void setImageStorageUrl(String imageStorageUrl) {
+        this.imageStorageUrl = imageStorageUrl;
+    }
+
+    public Integer getTotalNumber() {
+        return totalNumber;
+    }
+
+    public void setTotalNumber(Integer totalNumber) {
+        this.totalNumber = totalNumber;
     }
 
 }

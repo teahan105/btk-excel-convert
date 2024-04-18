@@ -1,9 +1,8 @@
 package model;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Type;
 
-import jakarta.persistence.Entity;
+import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
@@ -11,20 +10,21 @@ import java.time.Instant;
 public class PackageServiceResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('package_service_results_id_seq'")
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "image_storage_url", length = Integer.MAX_VALUE)
+    @Column(name = "image_storage_url")
+    @Type(type = "org.hibernate.type.TextType")
     private String imageStorageUrl;
 
-    @Column(name = "lucky_number", length = Integer.MAX_VALUE)
+    
+    @Column(name = "lucky_number")
     private String luckyNumber;
 
-    @Column(name = "lucky_external_link", length = Integer.MAX_VALUE)
+    @Column(name = "lucky_external_link")
+    @Type(type = "org.hibernate.type.TextType")
     private String luckyExternalLink;
 
-    @ColumnDefault("now()")
     @Column(name = "created_at")
     private Instant createdAt;
 

@@ -2,6 +2,7 @@ import model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFPictureData;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,7 +17,116 @@ public class Main {
     public static void main(String[] args) throws IOException {
         FileInputStream file = new FileInputStream("/Users/teahan/IdeaProjects/btk-excel-convert/src/main/resources/btk-file.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(file);
-        luckyNumberDowImport(workbook);
+        secretCharacterDataLanguageImport(workbook);
+    }
+
+    private static void secretCharacterDataLanguageImport(XSSFWorkbook workbook) {
+        Sheet sheet = workbook.getSheetAt(1);
+        try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
+            try (Session session = sessionFactory.openSession()) {
+                Transaction transaction = session.beginTransaction();
+                Language languageEn = session.get(Language.class, 1);
+                Language languageTh = session.get(Language.class, 2);
+                for (var row : sheet) {
+                    if (row.getRowNum() <= 1 || row.getRowNum() >= 32) {
+                        continue;
+                    }
+                    SecretCharacterDataLanguage enSecretCharacterDataLanguage = new SecretCharacterDataLanguage();
+                    SecretCharacterDataLanguage thSecretCharacterDataLanguage = new SecretCharacterDataLanguage();
+                    for (var cell : row) {
+                        enSecretCharacterDataLanguage.setLanguageCode(languageEn);
+                        thSecretCharacterDataLanguage.setLanguageCode(languageTh);
+                        if (cell.getColumnIndex() == 0) {
+                            enSecretCharacterDataLanguage.setTotalNumber((int) cell.getNumericCellValue());
+                            thSecretCharacterDataLanguage.setTotalNumber((int) cell.getNumericCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 2) {
+                            enSecretCharacterDataLanguage.setCharacterName(cell.getStringCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 3) {
+                            thSecretCharacterDataLanguage.setCharacterName(cell.getStringCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 5) {
+                            enSecretCharacterDataLanguage.setPersonality("EN-" + enSecretCharacterDataLanguage.getCharacterName() + "-" + cell.getStringCellValue());
+                            thSecretCharacterDataLanguage.setPersonality("TH-" + thSecretCharacterDataLanguage.getCharacterName() + "-" + cell.getStringCellValue());
+                        }
+                    }
+                    session.persist(enSecretCharacterDataLanguage);
+                    session.persist(thSecretCharacterDataLanguage);
+                    if (!transaction.isActive()) {
+                        transaction.commit();
+                    }
+                }
+            }
+        }
+    }
+
+    private static void secretCharacterMappingImport(XSSFWorkbook workbook) {
+        Sheet sheet = workbook.getSheetAt(2);
+        try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
+            try (Session session = sessionFactory.openSession()) {
+                Transaction transaction = session.beginTransaction();
+                for (var row : sheet) {
+                    if (row.getRowNum() <= 3 || row.getRowNum() >= 34) {
+                        continue;
+                    }
+                    SecretCharacterLogicMapping secretCharacterLogicMapping = new SecretCharacterLogicMapping();
+                    for (var cell : row) {
+                        if (cell.getColumnIndex() == 0) {
+                            secretCharacterLogicMapping.setCharacterMatch((short) cell.getNumericCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 1) {
+                            secretCharacterLogicMapping.setTotalNumber((short) cell.getNumericCellValue());
+                        }
+                    }
+                    session.save(secretCharacterLogicMapping);
+                    if (!transaction.isActive()) {
+                        transaction.commit();
+                    }
+                }
+            }
+        }
+    }
+
+    private static void luckyNumberDabImport(XSSFWorkbook workbook) {
+        Sheet sheet = workbook.getSheetAt(5);
+        try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
+            try (Session session = sessionFactory.openSession()) {
+                Transaction transaction = session.beginTransaction();
+                Language languageEn = session.get(Language.class, 1);
+                Language languageTh = session.get(Language.class, 2);
+                for (var row : sheet) {
+                    if (row.getRowNum() <= 14 || row.getRowNum() >= 113) {
+                        continue;
+                    }
+                    LuckyNumberDabDataLanguage enLuckyNumberDabDataLanguage = new LuckyNumberDabDataLanguage();
+                    LuckyNumberDabDataLanguage thLuckyNumberDabDataLanguage = new LuckyNumberDabDataLanguage();
+                    for (var cell : row) {
+                        enLuckyNumberDabDataLanguage.setLanguageCode(languageEn);
+                        thLuckyNumberDabDataLanguage.setLanguageCode(languageTh);
+
+                        if (cell.getColumnIndex() == 0) {
+                            enLuckyNumberDabDataLanguage.setSumDateMonth((short) cell.getNumericCellValue());
+                            thLuckyNumberDabDataLanguage.setSumDateMonth((short) cell.getNumericCellValue());
+                        }
+
+                        if (cell.getColumnIndex() == 1) {
+                            enLuckyNumberDabDataLanguage.setOverall("EN-" + enLuckyNumberDabDataLanguage.getSumDateMonth() + "-" + cell.getStringCellValue());
+                            thLuckyNumberDabDataLanguage.setOverall("TH-" + enLuckyNumberDabDataLanguage.getSumDateMonth() + "-" + cell.getStringCellValue());
+                        }
+                    }
+                    session.persist(enLuckyNumberDabDataLanguage);
+                    session.persist(thLuckyNumberDabDataLanguage);
+                    if (!transaction.isActive()) {
+                        transaction.commit();
+                    }
+                }
+            }
+        }
     }
 
     private static void luckyNumberDowImport(XSSFWorkbook workbook) {
@@ -55,38 +165,67 @@ public class Main {
                             luckyNumberDowDatum.setDayOfWeek((short) 5);
                         }
 
-                        if (cell.getRowIndex() == 1) {
+                        if (cell.getRowIndex() == 11) {
                             luckyNumberDowDatum.setDayOfWeek((short) 6);
                         }
 
                         if (cell.getColumnIndex() == 3) {
-                            luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            try {
+                                luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            } catch (IllegalStateException ex) {
+                                luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
+                            }
                             luckyNumberDowDatum.setTopicType("work");
                         }
 
                         if (cell.getColumnIndex() == 4) {
-                            luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            try {
+                                luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            } catch (IllegalStateException ex) {
+                                luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
+                            }
                             luckyNumberDowDatum.setTopicType("kindness");
+                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 5) {
-                            luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            try {
+                                luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            } catch (IllegalStateException ex) {
+                                luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
+                            }
                             luckyNumberDowDatum.setTopicType("โชคลาภและการเงิน");
+                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 6) {
-                            luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            try {
+                                luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            } catch (IllegalStateException ex) {
+                                luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
+                            }
                             luckyNumberDowDatum.setTopicType("ความรัก");
+                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 7) {
-                            luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            try {
+                                luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            } catch (IllegalStateException ex) {
+                                luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
+                            }
                             luckyNumberDowDatum.setTopicType("แคล้วคลาด");
+                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 8) {
-                            luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            try {
+                                luckyNumberDowDatum.setLuckyNumber(cell.getStringCellValue());
+                            } catch (IllegalStateException ex) {
+                                luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
+                            }
                             luckyNumberDowDatum.setTopicType("comboset");
+                            session.persist(luckyNumberDowDatum);
                         }
                         if (!transaction.isActive()) {
                             transaction.commit();
