@@ -2,7 +2,6 @@ import model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFPictureData;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,17 +10,20 @@ import org.hibernate.cfg.Configuration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         FileInputStream file = new FileInputStream("/Users/teahan/IdeaProjects/btk-excel-convert/src/main/resources/btk-file.xlsx");
+        FileInputStream fileEn = new FileInputStream("/Users/teahan/IdeaProjects/btk-excel-convert/src/main/resources/btk-file-en.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(file);
-        secretCharacterDataLanguageImport(workbook);
+        XSSFWorkbook workbookEn = new XSSFWorkbook(fileEn);
+        secretCharacterDataLanguageImport(workbook, workbookEn);
     }
 
-    private static void secretCharacterDataLanguageImport(XSSFWorkbook workbook) {
+    private static void secretCharacterDataLanguageImport(XSSFWorkbook workbook, XSSFWorkbook workbookEn) {
         Sheet sheet = workbook.getSheetAt(1);
+        Sheet sheetEn = workbookEn.getSheetAt(1);
         try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
             try (Session session = sessionFactory.openSession()) {
                 Transaction transaction = session.beginTransaction();
@@ -33,9 +35,11 @@ public class Main {
                     }
                     SecretCharacterDataLanguage enSecretCharacterDataLanguage = new SecretCharacterDataLanguage();
                     SecretCharacterDataLanguage thSecretCharacterDataLanguage = new SecretCharacterDataLanguage();
+                    var rowEn = sheetEn.getRow(row.getRowNum());
                     for (var cell : row) {
                         enSecretCharacterDataLanguage.setLanguageCode(languageEn);
                         thSecretCharacterDataLanguage.setLanguageCode(languageTh);
+                        var cellEn = rowEn.getCell(cell.getColumnIndex());
                         if (cell.getColumnIndex() == 0) {
                             enSecretCharacterDataLanguage.setTotalNumber((int) cell.getNumericCellValue());
                             thSecretCharacterDataLanguage.setTotalNumber((int) cell.getNumericCellValue());
@@ -49,9 +53,9 @@ public class Main {
                             thSecretCharacterDataLanguage.setCharacterName(cell.getStringCellValue());
                         }
 
-                        if (cell.getColumnIndex() == 5) {
-                            enSecretCharacterDataLanguage.setPersonality("EN-" + enSecretCharacterDataLanguage.getCharacterName() + "-" + cell.getStringCellValue());
-                            thSecretCharacterDataLanguage.setPersonality("TH-" + thSecretCharacterDataLanguage.getCharacterName() + "-" + cell.getStringCellValue());
+                        if (cell.getColumnIndex() == 7) {
+                            enSecretCharacterDataLanguage.setPersonality(cellEn.getStringCellValue());
+                            thSecretCharacterDataLanguage.setPersonality(cell.getStringCellValue());
                         }
                     }
                     session.persist(enSecretCharacterDataLanguage);
@@ -92,8 +96,9 @@ public class Main {
         }
     }
 
-    private static void luckyNumberDabImport(XSSFWorkbook workbook) {
+    private static void luckyNumberDabImport(XSSFWorkbook workbook, XSSFWorkbook workbookEn) {
         Sheet sheet = workbook.getSheetAt(5);
+        Sheet sheetEn = workbookEn.getSheetAt(5);
         try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
             try (Session session = sessionFactory.openSession()) {
                 Transaction transaction = session.beginTransaction();
@@ -105,9 +110,11 @@ public class Main {
                     }
                     LuckyNumberDabDataLanguage enLuckyNumberDabDataLanguage = new LuckyNumberDabDataLanguage();
                     LuckyNumberDabDataLanguage thLuckyNumberDabDataLanguage = new LuckyNumberDabDataLanguage();
+                    var rowEn = sheetEn.getRow(row.getRowNum());
                     for (var cell : row) {
                         enLuckyNumberDabDataLanguage.setLanguageCode(languageEn);
                         thLuckyNumberDabDataLanguage.setLanguageCode(languageTh);
+                        var cellEn = rowEn.getCell(cell.getColumnIndex());
 
                         if (cell.getColumnIndex() == 0) {
                             enLuckyNumberDabDataLanguage.setSumDateMonth((short) cell.getNumericCellValue());
@@ -115,8 +122,8 @@ public class Main {
                         }
 
                         if (cell.getColumnIndex() == 1) {
-                            enLuckyNumberDabDataLanguage.setOverall("EN-" + enLuckyNumberDabDataLanguage.getSumDateMonth() + "-" + cell.getStringCellValue());
-                            thLuckyNumberDabDataLanguage.setOverall("TH-" + enLuckyNumberDabDataLanguage.getSumDateMonth() + "-" + cell.getStringCellValue());
+                            enLuckyNumberDabDataLanguage.setOverall(cellEn.getStringCellValue());
+                            thLuckyNumberDabDataLanguage.setOverall(cell.getStringCellValue());
                         }
                     }
                     session.persist(enLuckyNumberDabDataLanguage);
@@ -129,18 +136,30 @@ public class Main {
         }
     }
 
-    private static void luckyNumberDowImport(XSSFWorkbook workbook) {
+    private static void luckyNumberDowImport(XSSFWorkbook workbook, XSSFWorkbook workbookEn) {
         Sheet sheet = workbook.getSheetAt(5);
+        Sheet sheetEn = workbookEn.getSheetAt(5);
         try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
             try (Session session = sessionFactory.openSession()) {
                 Transaction transaction = session.beginTransaction();
+                Language languageEn = session.get(Language.class, 1);
+                Language languageTh = session.get(Language.class, 2);
                 for (var row : sheet) {
                     if (row.getRowNum() <= 4 || row.getRowNum() >= 12) {
                         continue;
                     }
-
+                    var rowEn = sheetEn.getRow(row.getRowNum());
+                    String overall = row.getCell(2).getStringCellValue();
+                    String overallEn = rowEn.getCell(2).getStringCellValue();
                     for (var cell : row) {
-                        LuckyNumberDowDatum luckyNumberDowDatum = new LuckyNumberDowDatum();
+//                        var cellEn = rowEn.getCell(cell.getColumnIndex());
+                        var luckyNumberDowDatum = new LuckyNumberDowDataLanguage();
+                        luckyNumberDowDatum.setLanguageCode(languageTh);
+                        luckyNumberDowDatum.setOverall(overall);
+                        var luckyNumberDowDatumEn = new LuckyNumberDowDataLanguage();
+                        luckyNumberDowDatumEn.setLanguageCode(languageEn);
+                        luckyNumberDowDatumEn.setOverall(overallEn);
+
                         if (cell.getRowIndex() == 5) {
                             luckyNumberDowDatum.setDayOfWeek((short) 0);
                         }
@@ -168,6 +187,10 @@ public class Main {
                         if (cell.getRowIndex() == 11) {
                             luckyNumberDowDatum.setDayOfWeek((short) 6);
                         }
+                        if (List.of(5,6,7,8,9,10,11).contains(cell.getRowIndex())) {
+                            luckyNumberDowDatumEn.setDayOfWeek(luckyNumberDowDatum.getDayOfWeek());
+                        }
+
 
                         if (cell.getColumnIndex() == 3) {
                             try {
@@ -185,7 +208,7 @@ public class Main {
                                 luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
                             }
                             luckyNumberDowDatum.setTopicType("kindness");
-                            session.persist(luckyNumberDowDatum);
+//                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 5) {
@@ -195,7 +218,7 @@ public class Main {
                                 luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
                             }
                             luckyNumberDowDatum.setTopicType("โชคลาภและการเงิน");
-                            session.persist(luckyNumberDowDatum);
+//                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 6) {
@@ -205,7 +228,7 @@ public class Main {
                                 luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
                             }
                             luckyNumberDowDatum.setTopicType("ความรัก");
-                            session.persist(luckyNumberDowDatum);
+//                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 7) {
@@ -215,7 +238,7 @@ public class Main {
                                 luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
                             }
                             luckyNumberDowDatum.setTopicType("แคล้วคลาด");
-                            session.persist(luckyNumberDowDatum);
+//                            session.persist(luckyNumberDowDatum);
                         }
 
                         if (cell.getColumnIndex() == 8) {
@@ -225,8 +248,17 @@ public class Main {
                                 luckyNumberDowDatum.setLuckyNumber(String.valueOf((int) cell.getNumericCellValue()));
                             }
                             luckyNumberDowDatum.setTopicType("comboset");
-                            session.persist(luckyNumberDowDatum);
+//                            session.persist(luckyNumberDowDatum);
                         }
+
+                        if (List.of(3,4,5,6,7,8).contains(cell.getColumnIndex())) {
+                            luckyNumberDowDatumEn.setLuckyNumber(luckyNumberDowDatum.getLuckyNumber());
+                            luckyNumberDowDatumEn.setTopicType(luckyNumberDowDatum.getTopicType());
+
+                            session.persist(luckyNumberDowDatum);
+                            session.persist(luckyNumberDowDatumEn);
+                        }
+
                         if (!transaction.isActive()) {
                             transaction.commit();
                         }
@@ -237,8 +269,9 @@ public class Main {
         }
     }
 
-    private static void luckyWallPaperImport(XSSFWorkbook workbook) {
+    private static void luckyWallPaperImport(XSSFWorkbook workbook, XSSFWorkbook workbookEn) {
         Sheet sheet = workbook.getSheetAt(4);
+        Sheet sheetEn = workbookEn.getSheetAt(4);
         try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
             try (Session session = sessionFactory.openSession()) {
                 Language languageEn = session.get(Language.class, 1);
@@ -253,51 +286,53 @@ public class Main {
                         break;
                     }
 
+                    var rowEn = sheetEn.getRow(row.getRowNum());
                     String wallpaperName = row.getCell(1).getStringCellValue();
                     String luckyMeaning = row.getCell(2).getStringCellValue();
-
+                    String wallpaperNameEn = rowEn.getCell(1).getStringCellValue();
+                    String luckyMeaningEn = rowEn.getCell(2).getStringCellValue();
                     for (var cell : row) {
                         LuckyWallpaperDataLanguage enLuckyWallpaperDataLanguage = new LuckyWallpaperDataLanguage();
                         LuckyWallpaperDataLanguage thLuckyWallpaperDataLanguage = new LuckyWallpaperDataLanguage();
-
+                        var cellEn = rowEn.getCell(cell.getColumnIndex());
 
                         if (cell.getColumnIndex() == 3) {
                             enLuckyWallpaperDataLanguage.setTopicType("work");
                             thLuckyWallpaperDataLanguage.setTopicType("work");
-                            enLuckyWallpaperDataLanguage.setTopicResult("EN work " + cell.getStringCellValue());
-                            thLuckyWallpaperDataLanguage.setTopicResult("TH work " + cell.getStringCellValue());
+                            enLuckyWallpaperDataLanguage.setTopicResult(cellEn.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult(cell.getStringCellValue());
                         }
 
                         if (cell.getColumnIndex() == 4) {
                             enLuckyWallpaperDataLanguage.setTopicType("money");
                             thLuckyWallpaperDataLanguage.setTopicType("money");
-                            enLuckyWallpaperDataLanguage.setTopicResult("EN money " + cell.getStringCellValue());
-                            thLuckyWallpaperDataLanguage.setTopicResult("TH money " + cell.getStringCellValue());
+                            enLuckyWallpaperDataLanguage.setTopicResult(cellEn.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult(cell.getStringCellValue());
                         }
 
                         if (cell.getColumnIndex() == 5) {
                             enLuckyWallpaperDataLanguage.setTopicType("love");
                             thLuckyWallpaperDataLanguage.setTopicType("love");
-                            enLuckyWallpaperDataLanguage.setTopicResult("EN love " + cell.getStringCellValue());
-                            thLuckyWallpaperDataLanguage.setTopicResult("TH love " + cell.getStringCellValue());
+                            enLuckyWallpaperDataLanguage.setTopicResult(cellEn.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult(cell.getStringCellValue());
                         }
 
                         if (cell.getColumnIndex() == 6) {
                             enLuckyWallpaperDataLanguage.setTopicType("health");
                             thLuckyWallpaperDataLanguage.setTopicType("health");
-                            enLuckyWallpaperDataLanguage.setTopicResult("EN health " + cell.getStringCellValue());
-                            thLuckyWallpaperDataLanguage.setTopicResult("TH health " + cell.getStringCellValue());
+                            enLuckyWallpaperDataLanguage.setTopicResult(cellEn.getStringCellValue());
+                            thLuckyWallpaperDataLanguage.setTopicResult(cell.getStringCellValue());
                         }
 
                         if (cell.getColumnIndex() == 3 || cell.getColumnIndex() == 4
                                 || cell.getColumnIndex() == 5 || cell.getColumnIndex() == 6) {
                             enLuckyWallpaperDataLanguage.setLanguageCode(languageEn);
-                            enLuckyWallpaperDataLanguage.setName("EN " + wallpaperName);
-                            enLuckyWallpaperDataLanguage.setLuckyMeaning("EN " + luckyMeaning);
+                            enLuckyWallpaperDataLanguage.setName(wallpaperNameEn);
+                            enLuckyWallpaperDataLanguage.setLuckyMeaning(luckyMeaningEn);
 
                             thLuckyWallpaperDataLanguage.setLanguageCode(languageTh);
-                            thLuckyWallpaperDataLanguage.setName("TH " + wallpaperName);
-                            thLuckyWallpaperDataLanguage.setLuckyMeaning("TH " + luckyMeaning);
+                            thLuckyWallpaperDataLanguage.setName(wallpaperName);
+                            thLuckyWallpaperDataLanguage.setLuckyMeaning(luckyMeaning);
 
                             session.persist(thLuckyWallpaperDataLanguage);
                             session.persist(enLuckyWallpaperDataLanguage);
@@ -311,8 +346,10 @@ public class Main {
         }
     }
 
-    private static void faceReadingImport(XSSFWorkbook workbook) {
+    private static void faceReadingImport(XSSFWorkbook workbook, XSSFWorkbook workbookEn) {
         Sheet sheet = workbook.getSheetAt(3);
+        Sheet sheetEn = workbookEn.getSheetAt(3);
+
         try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
             try (Session session = sessionFactory.openSession()) {
                 Language languageEn = session.get(Language.class, 1);
@@ -328,6 +365,7 @@ public class Main {
                             || StringUtils.containsAny(signCode, "Chin", "Forehead", "Date")) {
                         continue;
                     }
+                    var rowEn = sheetEn.getRow(row.getRowNum());
                     try {
                         for (var cell : row) {
                             var enFaceReadingDataLanguage = new FaceReadingDataLanguage();
@@ -346,19 +384,20 @@ public class Main {
                                 }
                                 faceReadingData.setTopicType(topicType);
                                 session.persist(faceReadingData);
+                                var cellEn = rowEn.getCell(cell.getColumnIndex());
 
-                                enFaceReadingDataLanguage.setTopicResult("EN-" + signCode + "-" + topicType + " " + cell.getStringCellValue());
-                                thFaceReadingDataLanguage.setTopicResult("TH-" + signCode + "-" + topicType + " " + cell.getStringCellValue());
+                                enFaceReadingDataLanguage.setTopicResult(cell.getStringCellValue());
+                                thFaceReadingDataLanguage.setTopicResult(cellEn.getStringCellValue());
                                 enFaceReadingDataLanguage.setLanguageCode(languageEn);
                                 thFaceReadingDataLanguage.setLanguageCode(languageTh);
                                 enFaceReadingDataLanguage.setFaceReadingData(faceReadingData);
                                 thFaceReadingDataLanguage.setFaceReadingData(faceReadingData);
                                 session.persist(enFaceReadingDataLanguage);
                                 session.persist(thFaceReadingDataLanguage);
-                                if (!transaction.isActive()) {
-                                    transaction.commit();
-                                }
                             }
+                        }
+                        if (!transaction.isActive()) {
+                            transaction.commit();
                         }
                     } catch (Exception ex) {
                         continue;

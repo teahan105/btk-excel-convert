@@ -19,7 +19,7 @@
         <mapping class="model.FaceReadingDataLanguage"/>
         <mapping class="model.LuckyWallpaperDataLanguage"/>
         <mapping class="model.LuckyNumberDabDataLanguage"/>
-        <mapping class="model.LuckyNumberDowDatum"/>
+        <mapping class="model.LuckyNumberDowDataLanguage"/>
         <mapping class="model.SecretCharacterLogicMapping"/>
         <mapping class="model.SecretCharacterDataLanguage"/>
     </session-factory>

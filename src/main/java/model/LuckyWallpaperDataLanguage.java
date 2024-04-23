@@ -12,15 +12,19 @@ public class LuckyWallpaperDataLanguage {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    
-    @Column(name = "name", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "language_code", nullable = false, referencedColumnName = "code")
+    private Language languageCode;
+
+    @Lob
+    @Column(name = "name")
     private String name;
 
+    @Lob
     @Column(name = "lucky_meaning")
-    @Type(type = "org.hibernate.type.TextType")
     private String luckyMeaning;
 
-    @Column(name = "topic_result", nullable = false)
+    @Column(name = "topic_result")
     @Type(type = "org.hibernate.type.TextType")
     private String topicResult;
 
@@ -31,16 +35,20 @@ public class LuckyWallpaperDataLanguage {
     @Column(name = "topic_type", length = 50)
     private String topicType;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "language_code", nullable = false, referencedColumnName = "code")
-    private Language languageCode;
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Language getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(Language languageCode) {
+        this.languageCode = languageCode;
     }
 
     public String getName() {
@@ -81,14 +89,6 @@ public class LuckyWallpaperDataLanguage {
 
     public void setTopicType(String topicType) {
         this.topicType = topicType;
-    }
-
-    public Language getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(Language languageCode) {
-        this.languageCode = languageCode;
     }
 
 }
